@@ -1,16 +1,15 @@
-import Logo from '../shared/assets/logo.png';
-
 import './styles/index.css';
 import './styles/reset.css'; 
+import { Navbar } from '@/widgets/Navbar';
+import { AppRouter } from '@/app/providers/router';
 
 const App = () => (
-    <>         
-        <div> 
-            <a 
-                href="https://react.dev" target="_blank" rel="noreferrer">
-                <img src={Logo} className="logo react" alt="React logo" />
-            </a>
+    <>       
+        <Navbar />
+        <div className='page-container'>
+            <AppRouter/>
         </div>
+        
     </>
 );
 

@@ -1,11 +1,7 @@
-
-.logo {
-  width: 500px;
-  height: auto;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.page-container {
+  width: 100%;
+	height: calc(100vh - 70px);
+	overflow: auto;
+	padding: 40px 40px 100px;
+  background-color: rgba(113, 110, 203, 0.208);
 }
