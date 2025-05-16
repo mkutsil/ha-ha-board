@@ -1,19 +1,41 @@
-import {  Grid, Box, Container, Button } from '@mui/material';
-import type { Joke } from '../../model/types/joke';
+import {  Grid, Box, Container, Button, Typography } from '@mui/material';
 import JokeListItem from './components/JokeListItem/JokeListItem';
+import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { getJokeList, getJokesError, getJokesIsLoading } from '../../model/selectors/joke';
+import { fetchTenJokes } from '../../model/services/fetchTenJokes/fetchTenJokes';
+import { PageLoader } from '@/widgets/PageLoader';
 
-interface JokeListProps {
-	jokes: Joke[];
-}
+export const JokeList = () => {
 
-export const JokeList = (props: JokeListProps) => {
+    const dispatch = useAppDispatch();
 
-    const { jokes } = props;
+    const jokeList = useSelector(getJokeList);
+    const jokesIsLoading = useSelector(getJokesIsLoading);
+    const jokesError = useSelector(getJokesError);
+
+    const onFetchTenJokes = () => {
+        dispatch(fetchTenJokes());
+    };
+
+    useEffect(() => {
+        onFetchTenJokes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    if(jokesIsLoading || !jokeList?.length){
+        return (<PageLoader/>);
+    }
+
+    if(jokesError) {
+        return (<Typography variant='h1'>Error</Typography>);
+    }
 
     return (
         <Container>
             <Grid container spacing={2}>
-                {jokes.map((joke) => (
+                {jokeList.map((joke) => (
                     <JokeListItem 
                         key={joke.id}
 								 				id={joke.id}
@@ -33,6 +55,7 @@ export const JokeList = (props: JokeListProps) => {
                 <Button
                     variant='contained'
                     size='large'
+                    onClick={onFetchTenJokes}
                 >
                     Load more
                 </Button>
