@@ -9,7 +9,6 @@ const App = () => (
         <div className='page-container'>
             <AppRouter/>
         </div>
-        
     </>
 );
 
