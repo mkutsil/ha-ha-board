@@ -1,6 +1,8 @@
 export interface Joke {
-	id: string;
+	id: number;
   type: string;
   setup: string;
   punchline: string;
+  isSaved?: boolean;
+  isLoading?: boolean;
 }
