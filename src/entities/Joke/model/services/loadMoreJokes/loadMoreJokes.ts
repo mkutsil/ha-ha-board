@@ -15,17 +15,14 @@ export const loadMoreJokes = createAsyncThunk<void, void, { state: RootState }>(
         while (newJokes.length < 10) {
             const res = await dispatch(fetchTenJokes()).unwrap();
 
-            // Фільтруємо тільки унікальні
             const unique = res.filter(j => !existingIds.has(j.id));
 
-            // Додаємо до масиву результатів і оновлюємо existingIds
             for (const j of unique) {
                 if (newJokes.length >= 10) break;
                 existingIds.add(j.id);
                 newJokes.push(j);
             }
 
-            // Якщо нічого нового не отримали — зупиняємось, щоб не зациклитись
             if (unique.length === 0) break;
         }
 

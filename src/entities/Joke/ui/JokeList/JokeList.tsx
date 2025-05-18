@@ -1,7 +1,7 @@
-import {  Grid, Box, Container, Button, Typography, Snackbar, type SnackbarCloseReason, Alert, Fade } from '@mui/material';
+import {  Grid, Box, Container, Button, Typography, useTheme, useMediaQuery } from '@mui/material';
 import JokeListItem from './components/JokeListItem/JokeListItem';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch/useAppDispatch';
-import { useEffect, useState, type SyntheticEvent } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getJokeList, getJokesError, getJokesIsLoading } from '../../model/selectors/joke';
 import { initializeJokes } from '../../model/services/initializeJokes/initializeJokes';
@@ -9,24 +9,12 @@ import { jokeActions } from '../../model/slice/jokeSlice';
 import { loadMoreJokes } from '../../model/services/loadMoreJokes/loadMoreJokes';
 import { refreshJoke } from '../../model/services/refreshJoke/refreshJoke';
 import JokeListItemSkeleton from './components/JokeListItemSkeleton/JokeListItemSkeleton';
+import { SnackbarAlertVariant, useSnackbar } from '@/app/providers/SnackbarProvider';
 
 export const JokeList = () => {
-    const [ open, setOpen ] = useState(false);
-
-    const handleClick = () => {
-        setOpen(true);
-    };
-
-    const handleClose = (
-        event?: SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen(false);
-    };
+    const { showSnackbar } = useSnackbar();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
     const dispatch = useAppDispatch();
 
@@ -34,12 +22,16 @@ export const JokeList = () => {
     const jokesIsLoading = useSelector(getJokesIsLoading);
     const jokesError = useSelector(getJokesError);
 
-    const onFetchTenJokes = () => {
+    const onLoadMoreJokes = () => {
         dispatch(loadMoreJokes());
     };
 
     useEffect(() => {
         dispatch(initializeJokes());
+
+        return () => {
+            dispatch(jokeActions.clearJokes());
+        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -47,42 +39,32 @@ export const JokeList = () => {
         return (<Typography variant='h1'>Error</Typography>);
     }
 
-    const onSaveJoke = (id: number) => {
+    const onToggleSave = (id: number, isSaved: boolean | undefined) => () => {
         dispatch(jokeActions.setSaveJoke(id));
-        handleClick();
+        showSnackbar(
+            isSaved ? 
+                'You have successfully deleted the joke from the saved!' :
+                'You have successfully added the joke in the saved!', 
+            SnackbarAlertVariant.SUCCESS);
     };
 
-    const onRefresh = ( id: number) => {
+    const onRefresh = ( id: number) => () => {
         dispatch(refreshJoke(id));
     };
 
+    const renderTenSkeletons = () => new Array(10)
+        .fill('')
+        .map((_, index) => (
+            <JokeListItemSkeleton key={index} />
+        ));
+
     return (
         <Container>
-            <Snackbar 
-                open={open} 
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }} 
-                autoHideDuration={5000} 
-                onClose={handleClose}
-            >
-                <Alert
-                    onClose={handleClose}
-                    severity="success"
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    This is a success Alert inside a Snackbar!
-                </Alert>
-            </Snackbar>
-           
-            <Grid container spacing={2}>
+            <Grid container spacing={2} justifyContent={matches? 'flex-start' : 'center'}>
                 {jokesIsLoading && !jokeList?.length ? 
-                    new Array(10)
-                        .fill(0)
-                        .map((_, index) => (
-                            <JokeListItemSkeleton key={index} />
-                        ))
+                    renderTenSkeletons()
                     :
-                    jokeList?.length && jokeList.map((joke) => (
+                    !!jokeList?.length && jokeList.map((joke) => (
                         <JokeListItem 
                             key={joke.id}
                             id={joke.id}
@@ -91,18 +73,15 @@ export const JokeList = () => {
                             punchline={joke.punchline}
                             isSaved={joke.isSaved}
                             isLoading={joke.isLoading}
-                            onSaveJoke={onSaveJoke}
-                            onRefresh={onRefresh}
+                            onToggleSave={onToggleSave(joke.id, joke.isSaved)}
+                            onRefresh={onRefresh(joke.id)}
+                            matches={matches}
                         />
                     ))    
                 }
 
-                {jokesIsLoading && jokeList?.length &&
-                    new Array(10)
-                        .fill(0)
-                        .map((_, index) => (
-                            <JokeListItemSkeleton key={index} />
-                        ))
+                {jokesIsLoading && !!jokeList?.length &&
+                    renderTenSkeletons()
                 }
             </Grid>
 
@@ -115,11 +94,12 @@ export const JokeList = () => {
                 <Button
                     variant='contained'
                     size='large'
-                    onClick={onFetchTenJokes}
+                    onClick={onLoadMoreJokes}
                     disabled={jokesIsLoading}
                 >
                     Load more
                 </Button>
             </Box>
         </Container>
-    );};
+    );
+};

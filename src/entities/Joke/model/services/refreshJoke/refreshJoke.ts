@@ -15,18 +15,15 @@ export const refreshJoke = createAsyncThunk<void, number, { state: RootState }>(
         while (true) {
             const res = await dispatch(fetchRandomJoke()).unwrap();
 
-            // Перевіряємо, чи є новий жарт унікальним, тобто його id відсутній в стейті
             const isDuplicate = jokesFromState.some(j => j.id === res.id);
 
             if (!isDuplicate) {
                 newJoke = res;
                 break;
             }
-            // Якщо дубліката немає — цикл завершуємо, інакше робимо наступний запит
         }
 
         if (newJoke) {
-            // Замінюємо жарт із jokeId на newJoke
             const updatedJokes = jokesFromState.map(j =>
                 j.id === jokeId ? newJoke! : j
             );

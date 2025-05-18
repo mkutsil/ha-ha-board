@@ -2,7 +2,6 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { JokeSchema } from '../types/jokeSchema';
 import { fetchTenJokes } from '../services/fetchTenJokes/fetchTenJokes';
 import type { Joke } from '../types/joke';
-import { fetchRandomJoke } from '../services/fetchRandomJoke/fetchRandomJoke';
 import { addJokeToStorage, removeJokeFromStorage } from '../lib/localStorageHelpers';
 
 const initialState: JokeSchema = {
@@ -17,14 +16,6 @@ export const jokeSlice = createSlice({
     reducers: {
         setJokes: (state, action: PayloadAction<Joke[]>) => {
             state.data = action.payload;
-        },
-        setJoke: (state, action: PayloadAction<Joke>) => {
-            state.data = state?.data?.map(joke => {
-                if(joke.id === action.payload.id){
-                    return action.payload;
-                }
-                return joke;
-            });
         },
         setSaveJoke: (state, action: PayloadAction<number>) => {
             const joke = state?.data?.find(item => item.id === action.payload);
@@ -41,7 +32,10 @@ export const jokeSlice = createSlice({
         setJokeIsLoading: (state, action: PayloadAction<number>) => {
             const joke = state?.data?.find(item => item.id === action.payload);
             if(joke) joke.isLoading = true;
-        }
+        },
+        clearJokes: (state) => {
+            state.data = [];
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -57,18 +51,6 @@ export const jokeSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             });
-        // .addCase(fetchRandomJoke.pending, (state) => {
-        //     state.error = undefined;
-        //     state.isLoading = true;
-        // })
-        // .addCase(fetchRandomJoke.fulfilled, (state, action: PayloadAction<Joke>) => {
-        //     state.isLoading = false;
-        //     state.data?.push(action.payload);
-        // })
-        // .addCase(fetchRandomJoke.rejected, (state, action) => {
-        //     state.isLoading = false;
-        //     state.error = action.payload as string;
-        // });
     }
 });
 

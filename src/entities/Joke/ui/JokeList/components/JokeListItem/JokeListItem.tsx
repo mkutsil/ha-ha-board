@@ -1,13 +1,17 @@
 import type { Joke } from '../../../../model/types/joke';
 import { useHover } from '@/shared/lib/hooks/useHover/useHover';
-import { Card,  Collapse, Box, Typography,  ButtonGroup, Button } from '@mui/material';
+import { Card, Box, Typography } from '@mui/material';
 import JokeListItemSkeleton from '../JokeListItemSkeleton/JokeListItemSkeleton';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
+import './JokeListItem.css';
+import JokeListItemFooter from './components/JokeListItemFooter/JokeListItemFooter';
+import JokeListItemInfoBlock from './components/JokeListItemInfoBlock/JokeListItemInfoBlock';
 
 interface JokeListItemProps extends Joke {
-    onSaveJoke: (id: number) => void;
-    onRefresh: (id: number) => void;
+    onToggleSave: () => void;
+    onRefresh: () => void;
+    matches: boolean;
 }
 
 const JokeListItem = (props: JokeListItemProps) => {
@@ -19,9 +23,10 @@ const JokeListItem = (props: JokeListItemProps) => {
         punchline,
         isSaved,
         isLoading,
-        onSaveJoke,
+        matches,
+        onToggleSave,
         onRefresh
-		 } = props;
+    } = props;
 
     const [ isHover, hoverBind ] = useHover();
 
@@ -30,23 +35,9 @@ const JokeListItem = (props: JokeListItemProps) => {
     return (
         <Card 
             key={id}
-            sx={{ 
-                padding: '20px',
-                width: '250px', 
-                height: '310px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                transition: 'box-shadow 0.3s ease',
-                // background: isSaved ? '#1a76d226': '',
-                '&:hover':{
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                }
-               
-            }}
+            className='card-container'
             {...hoverBind}
         >
-            
             <Box 
                 sx={{
                     display: 'flex',
@@ -54,29 +45,12 @@ const JokeListItem = (props: JokeListItemProps) => {
                 }}
             >
 
-                <Box>
-                    <Typography 
-                        component='span'
-                        variant="body2"
-                        sx={{ fontWeight: 700, pr: '5px' }}
-                    >
-                        Type:  
-                    </Typography>
+                <JokeListItemInfoBlock
+                    label="Type"
+                    text={type}
+                />
 
-                    <Typography 
-                        component='span'
-                        variant="body2"
-                    >
-                        {type}
-                    </Typography>
-                </Box>
-
-                <Box 
-                    sx={{
-                        display: 'flex',
-                        gap: '5px'
-                    }}
-                >
+                <Box className="card-header-container">
                     <Typography variant="body2">
                         {id}
                     </Typography>
@@ -85,7 +59,7 @@ const JokeListItem = (props: JokeListItemProps) => {
                         sx={{
                             cursor: 'pointer'
                         }}
-                        onClick={() => {onSaveJoke(id);}}
+                        onClick={onToggleSave}
                     >
                         {isSaved ? (
                             <TurnedInIcon color='info' />
@@ -93,85 +67,29 @@ const JokeListItem = (props: JokeListItemProps) => {
                             <TurnedInNotIcon color='info' />
                         )}
                     </Box>
-                   
                 </Box>
-               
             </Box>
 										
-            <Box 
-                sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '20px',
-                    }}
-                >
+            <Box className="card-content-container">
+                <Box className="card-content-info-container">
                         
-                    <Box>
-                        <Typography 
-                            variant="body2"
-                            sx={{ fontWeight: 700 }}
-                        >
-                            Setup:  
-                        </Typography>
+                    <JokeListItemInfoBlock
+                        label="Setup"
+                        text={setup}
+                    />
 
-                        <Typography 
-                            variant="body2"
-                        >
-                            {setup}
-                        </Typography>
-                    </Box>
+                    <JokeListItemInfoBlock
+                        label="Punchline"
+                        text={punchline}
+                    />
 
-                    <Box>
-                        <Typography 
-                            variant="body2"
-                            sx={{ fontWeight: 700 }}
-                        >
-                            Punchline:  
-                        </Typography>
-
-                        <Typography 
-                            variant="body2"
-                        >
-                            {punchline}
-                        </Typography>
-												
-                    </Box>
                 </Box>
-                <Collapse in={isHover}>
-                    <Box
-                        sx={{
-                            width: 'max-content',
-                            margin: 'auto',
-                        }}
-                    >
-                        <ButtonGroup  
-                            variant="contained" 
-                            aria-label="Basic button group"
-                        >
-                            <Button
-                                size='small'
-                                onClick={() => {onSaveJoke(id);}}
-                            >
-                                {isSaved? 'Delete' : 'Add'}
-                            </Button>
-                            <Button
-                                size='small'
-                                onClick={() => {onRefresh(id);}}
-                            >
-                                Refresh
-                            </Button>
-                        </ButtonGroup>
-                    </Box>						
-                            
-                </Collapse>
+                <JokeListItemFooter
+                    isSaved={isSaved}
+                    isHover={matches? isHover : !matches}
+                    onToggleSave={onToggleSave}
+                    onRefresh={onRefresh}
+                />
             </Box>
         </Card>
 				

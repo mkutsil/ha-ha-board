@@ -1,4 +1,3 @@
-// services/initializeJokes.ts
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { jokeActions } from '../../slice/jokeSlice';
 import { fetchTenJokes } from '../fetchTenJokes/fetchTenJokes';
@@ -11,13 +10,11 @@ export const initializeJokes = createAsyncThunk<void, void, { state: RootState }
     async (_, { dispatch }) => {
         const jokesFromStorage = getSavedJokes();
 
-        // ✅ Якщо вже є 10+ жартів — просто використати їх
         if (jokesFromStorage.length >= 10) {
             dispatch(jokeActions.setJokes(jokesFromStorage.slice(0, 10)));
             return;
         }
 
-        // 🔄 Якщо менше — дозавантажуємо унікальні
         const existingIds = new Set(jokesFromStorage.map(j => j.id));
         const result: Joke[] = [ ...jokesFromStorage ];
 
@@ -30,11 +27,10 @@ export const initializeJokes = createAsyncThunk<void, void, { state: RootState }
                 result.push(j);
             });
 
-            if (unique.length === 0) break; // safety net
+            if (unique.length === 0) break; 
         }
 
         const finalJokes = result.slice(0, 10);
         dispatch(jokeActions.setJokes(finalJokes));
-        // localStorage.setItem('jokes', JSON.stringify(finalJokes));
     }
 );
