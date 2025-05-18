@@ -1,19 +1,24 @@
 import { NavLink, type LinkProps } from 'react-router-dom';
-import { Link as MuiLink } from '@mui/material';
+import { Link as MuiLink, useMediaQuery, useTheme } from '@mui/material';
 
 const AppLink = (props: LinkProps) => {
-    const { children, to } = props;
+    const { children, to, className = '' } = props;
+    
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
     return (
         <MuiLink
             component={NavLink}
             underline="none"
-            variant="h5"
+            variant={matches? 'h6' : undefined}
             to={to}
             sx={{
                 '&.active': {
-                    fontWeight: 'bold',
-                }
+                    color: '#EDBB27',
+                },
             }}
+            className={className}
         >
             {children}
         </MuiLink>

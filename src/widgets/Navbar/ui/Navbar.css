@@ -11,3 +11,21 @@
 	width: 70px;
 	height: auto;
 }
+
+.logo-link {
+	height: 70px;
+}
+
+@media (max-width: 400px) {
+	.navbar {
+		height: 50px;
+	}
+
+	.logo {
+		width: 50px;
+	}
+
+	.logo-link {
+		height: 50px;
+	}
+}
