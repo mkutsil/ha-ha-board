@@ -1,29 +1,41 @@
 import type { Joke } from '../../../../model/types/joke';
 import { useHover } from '@/shared/lib/hooks/useHover/useHover';
-import { Card,  Collapse, Box, Typography,  ButtonGroup, Button } from '@mui/material';
+import { Card, Box, Typography } from '@mui/material';
+import JokeListItemSkeleton from '../JokeListItemSkeleton/JokeListItemSkeleton';
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
+import './JokeListItem.css';
+import JokeListItemFooter from './components/JokeListItemFooter/JokeListItemFooter';
+import JokeListItemInfoBlock from './components/JokeListItemInfoBlock/JokeListItemInfoBlock';
 
-const JokeListItem = (props: Joke) => {
+interface JokeListItemProps extends Joke {
+    onToggleSave: () => void;
+    onRefresh: () => void;
+    matches: boolean;
+}
+
+const JokeListItem = (props: JokeListItemProps) => {
 
     const { 
         id,
         type,
         setup,
-        punchline
-		 } = props;
+        punchline,
+        isSaved,
+        isLoading,
+        matches,
+        onToggleSave,
+        onRefresh
+    } = props;
 
     const [ isHover, hoverBind ] = useHover();
+
+    if(isLoading) return <JokeListItemSkeleton/>;
 		
     return (
         <Card 
             key={id}
-            sx={{ 
-                padding: '20px',
-                width: '250px', 
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                cursor: 'pointer',
-            }}
+            className='card-container'
             {...hoverBind}
         >
             <Box 
@@ -33,86 +45,51 @@ const JokeListItem = (props: Joke) => {
                 }}
             >
 
-                <Box>
-                    <Typography 
-                        component='span'
-                        variant="body2"
-                        sx={{ fontWeight: 700, pr: '5px' }}
-                    >
-                        Type:  
+                <JokeListItemInfoBlock
+                    label="Type"
+                    text={type}
+                />
+
+                <Box className="card-header-container">
+                    <Typography variant="body2">
+                        {id}
                     </Typography>
 
-                    <Typography 
-                        component='span'
-                        variant="body2"
+                    <Box
+                        sx={{
+                            cursor: 'pointer'
+                        }}
+                        onClick={onToggleSave}
                     >
-                        {type}
-                    </Typography>
+                        {isSaved ? (
+                            <TurnedInIcon color='info' />
+                        ) : (
+                            <TurnedInNotIcon color='info' />
+                        )}
+                    </Box>
                 </Box>
-
-                <Typography variant="body2">
-                    {id}
-                </Typography>
             </Box>
 										
-            <Box 
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'all 0.2s',
-                    gap: isHover? '5px' : '20px',
-                }}
-            >
-                <Box>
-                    <Typography 
-                        variant="body2"
-                        sx={{ fontWeight: 700 }}
-                    >
-                        Setup:  
-                    </Typography>
+            <Box className="card-content-container">
+                <Box className="card-content-info-container">
+                        
+                    <JokeListItemInfoBlock
+                        label="Setup"
+                        text={setup}
+                    />
 
-                    <Typography 
-                        variant="body2"
-                    >
-                        {setup}
-                    </Typography>
+                    <JokeListItemInfoBlock
+                        label="Punchline"
+                        text={punchline}
+                    />
+
                 </Box>
-
-                <Box>
-                    <Typography 
-                        variant="body2"
-                        sx={{ fontWeight: 700 }}
-                    >
-                        Punchline:  
-                    </Typography>
-
-                    <Typography 
-                        variant="body2"
-                    >
-                        {punchline}
-                    </Typography>
-												
-                </Box>
-                <Collapse in={isHover}>
-														
-                    <ButtonGroup variant="contained" aria-label="Basic button group">
-                        <Button
-                            size='small'
-                        >
-                            Delete
-                        </Button>
-                        <Button
-                            size='small'
-                        >
-                            Add
-                        </Button>
-                        <Button
-                            size='small'
-                        >
-                            Refresh
-                        </Button>
-                    </ButtonGroup>
-                </Collapse>
+                <JokeListItemFooter
+                    isSaved={isSaved}
+                    isHover={matches? isHover : !matches}
+                    onToggleSave={onToggleSave}
+                    onRefresh={onRefresh}
+                />
             </Box>
         </Card>
 				
