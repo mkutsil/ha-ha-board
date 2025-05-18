@@ -5,3 +5,9 @@
 	padding: 40px 40px 100px;
   background-color: rgba(113, 110, 203, 0.208);
 }
+
+@media (max-width: 400px) {
+	.page-container {
+		height: calc(100vh - 50px);
+	}
+}

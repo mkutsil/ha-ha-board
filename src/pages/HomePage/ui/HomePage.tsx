@@ -1,11 +1,10 @@
 import { JokeList } from '@/entities/Joke';
-import {  Container,  Typography } from '@mui/material';
+import {  Container } from '@mui/material';
+import WelcomeBlock from './components/WelcomeBlock/WelcomeBlock';
 
 const HomePage = () => (
     <Container>
-        <Typography variant="h4" gutterBottom>
-            Welcome to HaHaBoard
-        </Typography>
+        <WelcomeBlock/>
 
         <JokeList />
     </Container>

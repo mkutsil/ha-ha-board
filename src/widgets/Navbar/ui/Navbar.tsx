@@ -5,7 +5,12 @@ import AppLink from '@/shared/ui/AppLink/AppLink';
 
 export const Navbar = () => ( 
     <div className='navbar'>
-        <img src={Logo} className="logo" alt="HaHaBoard logo" />
+        <AppLink 
+            to={RoutePath.home}
+            className='logo-link'
+        >
+            <img src={Logo} className="logo" alt="HaHaBoard logo" />
+        </AppLink>
         
         <AppLink 
             to={RoutePath.home}
