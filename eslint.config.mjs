@@ -24,7 +24,7 @@ export default [
         },
     },
     {
-        ignores: [ '**/build/**' ],
+        ignores: [ '**/dist/**' ],
     },
     pluginJs.configs.recommended,
     ...tseslint.configs.recommended,
