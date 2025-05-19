@@ -2,6 +2,8 @@
 
 HaHaBoard is a modern web application built with React and Vite. The project leverages a range of tools and libraries for state management, routing, styling, and code quality.
 
+👉 **Live demo**: [https://ha-ha-board.netlify.app/](https://ha-ha-board.netlify.app/)
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
